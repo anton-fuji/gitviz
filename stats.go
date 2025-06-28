@@ -190,7 +190,7 @@ func printMonths() {
 	for {
 		if week.Month() != month {
 			fmt.Printf("%s", week.Month().String()[:3])
-			fmt.Printf("                ")
+			fmt.Printf("    ")
 			month = week.Month()
 		} else {
 			fmt.Printf("    ")
@@ -206,12 +206,20 @@ func printMonths() {
 func printDayCol(day int) {
 	out := "     "
 	switch day {
-	case 1:
+	case 0: // 日曜日
+		out = " Sun "
+	case 1: // 月曜日
 		out = " Mon "
-	case 3:
+	case 2: // 火曜日
+		out = " Tue "
+	case 3: // 水曜日
 		out = " Wed "
-	case 5:
+	case 4: // 木曜日
+		out = " Thu "
+	case 5: // 金曜日
 		out = " Fri "
+	case 6: // 土曜日
+		out = " Sat "
 	}
 	fmt.Printf("%s", out)
 }
