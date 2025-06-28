@@ -73,7 +73,7 @@ func scanGitFolders(folders []string, folder string) []string {
 				folders = append(folders, path)
 				continue
 			}
-			if file.Name() == "vendor" || file.Name() == "node_modules" {
+			if file.Name() == "vendor" || file.Name() == "node_modules" || file.Name() == ".terraform" {
 				continue
 			}
 			folders = scanGitFolders(folders, path)
