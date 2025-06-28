@@ -52,6 +52,6 @@ gitviz -add /path/to/your/git/projects/directory
 ## 2. Displaying the Contribution Graph
 Once repositories are registered, you can generate and display your contribution graph by specifying your Git commit email address.
 ```sh
-gitviz -email your.email@example.com
+gitviz -graph your.email@example.com
 ```
 - Replace `your-address@example.com` with the email address you use for your Git Commits.
