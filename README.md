@@ -5,7 +5,7 @@
 `gitviz` is a command-line utility written in Go that visualizes your Git commit activity from local repositories, mimicking GitHub's contribution graph directly in your terminal.
 
 # Demo
-![](demo/demo.gif)
+![](demo/demo-gitviz.gif)
 
 # Setup
 ### 1. Clone this Repository
