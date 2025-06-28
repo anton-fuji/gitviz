@@ -47,7 +47,7 @@ gitviz -add /path/to/your/git/projects/directory
 ```
 
 > [!NOTE]
-> Registered repository paths are saved in a hidden file named `.gitlocalstatsin` in your home directory
+> Registered repository paths are saved in a hidden file named `.gitlocalstats` in your home directory
 
 ## 2. Displaying the Contribution Graph
 Once repositories are registered, you can generate and display your contribution graph by specifying your Git commit email address.
