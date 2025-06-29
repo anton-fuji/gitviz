@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"sort"
+	"strings"
 	"time"
 
 	go_git "gopkg.in/src-d/go-git.v4"
@@ -137,18 +138,28 @@ func sortMapIntoSlice(m map[int]int) []int {
 
 func buildCols(keys []int, commits map[int]int) map[int]column {
 	cols := make(map[int]column)
-	// 処理中の週のコミット数を一時的に保存
-	col := column{}
+	weeklyData := make(map[int]map[int]int) // 週ごとの日付とコミット数を一時的に保持
+
 	for _, k := range keys {
 		week := int(k / 7)
 		dayinweek := k % 7
-		if dayinweek == 0 {
-			col = column{}
+
+		if _, ok := weeklyData[week]; !ok {
+			weeklyData[week] = make(map[int]int)
 		}
-		col = append(col, commits[k])
-		if dayinweek == 6 {
-			cols[week] = col
+		weeklyData[week][dayinweek] = commits[k]
+	}
+
+	for week, days := range weeklyData {
+		col := make(column, 7)
+		for i := 0; i < 7; i++ {
+			if count, ok := days[i]; ok {
+				col[i] = count
+			} else {
+				col[i] = 0
+			}
 		}
+		cols[week] = col
 	}
 	return cols
 }
@@ -182,43 +193,77 @@ func printCells(cols map[int]column) {
 }
 
 // グラフの最初の行に月を表示させる
-func printMonths() {
-	week := getBeginningOfDay(time.Now()).Add(-(time.Duration(daysInLastSixMonths) * time.Hour * 24))
-	month := week.Month()
-	fmt.Printf("     ")
+// func printMonths() {
+// 	week := getBeginningOfDay(time.Now()).Add(-(time.Duration(daysInLastSixMonths) * time.Hour * 24))
+// 	month := week.Month()
+// 	fmt.Printf("     ")
 
-	for {
-		if week.Month() != month {
-			fmt.Printf("%s", week.Month().String()[:3])
-			fmt.Printf("    ")
-			month = week.Month()
-		} else {
-			fmt.Printf("    ")
-		}
-		week = week.Add(7 * time.Hour * 24)
-		if week.After(time.Now()) {
-			break
+// 	for {
+// 		if week.Month() != month {
+// 			fmt.Printf("%s", week.Month().String()[:3])
+// 			fmt.Printf("    ")
+// 			month = week.Month()
+// 		} else {
+// 			fmt.Printf("    ")
+// 		}
+// 		week = week.Add(7 * time.Hour * 24)
+// 		if week.After(time.Now()) {
+// 			break
+// 		}
+// 	}
+// 	fmt.Printf("\n")
+// }
+
+func printMonths() {
+	var monthLine strings.Builder
+	monthLine.WriteString("     ")
+
+	now := time.Now()
+	currentSunday := getBeginningOfDay(now).Add(time.Duration(-now.Weekday()) * 24 * time.Hour)
+	monthMarks := make(map[int]string)
+
+	for i := weeksInLastSixMonths; i >= 0; i-- {
+		weekStart := currentSunday.Add(time.Duration(-i*7) * 24 * time.Hour)
+		prevWeekStart := currentSunday.Add(time.Duration(-(i+1)*7) * 24 * time.Hour)
+
+		// 月が変わった場合、または最も古い週の場合
+		if i == weeksInLastSixMonths || weekStart.Month() != prevWeekStart.Month() {
+			monthMarks[i] = weekStart.Month().String()[:3]
 		}
 	}
-	fmt.Printf("\n")
+
+	for i := weeksInLastSixMonths + 1; i >= 0; i-- {
+		if i == weeksInLastSixMonths+1 {
+			monthLine.WriteString(" ")
+			continue
+		}
+
+		if month, ok := monthMarks[i]; ok {
+
+			monthLine.WriteString(fmt.Sprintf("%-4s", month))
+		} else {
+			monthLine.WriteString("    ")
+		}
+	}
+	fmt.Println(monthLine.String())
 }
 
 func printDayCol(day int) {
 	out := "     "
 	switch day {
-	case 0: // 日曜日
+	case 0:
 		out = " Sun "
-	case 1: // 月曜日
+	case 1:
 		out = " Mon "
-	case 2: // 火曜日
+	case 2:
 		out = " Tue "
-	case 3: // 水曜日
+	case 3:
 		out = " Wed "
-	case 4: // 木曜日
+	case 4:
 		out = " Thu "
-	case 5: // 金曜日
+	case 5:
 		out = " Fri "
-	case 6: // 土曜日
+	case 6:
 		out = " Sat "
 	}
 	fmt.Printf("%s", out)
@@ -227,7 +272,6 @@ func printDayCol(day int) {
 func printCell(val int, today bool) {
 	escape := "\033[0;37;30m"
 
-	// コミット数のカラー
 	switch {
 	case val > 0 && val < 5:
 		escape = "\033[1;30;46m"
