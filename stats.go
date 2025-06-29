@@ -99,25 +99,7 @@ func countDaysSinceDate(date time.Time) int {
 
 // 必要な日数のオフセットを計算して返す
 func calcOffset() int {
-	var offset int
-	weekday := time.Now().Weekday()
-	switch weekday {
-	case time.Sunday:
-		offset = 7
-	case time.Monday:
-		offset = 6
-	case time.Tuesday:
-		offset = 5
-	case time.Wednesday:
-		offset = 4
-	case time.Thursday:
-		offset = 3
-	case time.Friday:
-		offset = 2
-	case time.Saturday:
-		offset = 1
-	}
-	return offset
+	return 0
 }
 
 // 集計されたコミットをグラフ形式で出力
@@ -138,45 +120,56 @@ func sortMapIntoSlice(m map[int]int) []int {
 
 func buildCols(keys []int, commits map[int]int) map[int]column {
 	cols := make(map[int]column)
-	weeklyData := make(map[int]map[int]int) // 週ごとの日付とコミット数を一時的に保持
 
+	now := time.Now()
+	// 今週の日曜日を基準点として設定
+	today := getBeginningOfDay(now)
+	currentSunday := today.Add(time.Duration(-int(today.Weekday())) * 24 * time.Hour)
+
+	// 各日について処理
 	for _, k := range keys {
-		week := int(k / 7)
-		dayinweek := k % 7
+		commitDate := getBeginningOfDay(now).Add(time.Duration(-k) * 24 * time.Hour)
 
-		if _, ok := weeklyData[week]; !ok {
-			weeklyData[week] = make(map[int]int)
-		}
-		weeklyData[week][dayinweek] = commits[k]
-	}
+		// その日が属する週の日曜日を計算
+		commitSunday := commitDate.Add(time.Duration(-int(commitDate.Weekday())) * 24 * time.Hour)
 
-	for week, days := range weeklyData {
-		col := make(column, 7)
-		for i := 0; i < 7; i++ {
-			if count, ok := days[i]; ok {
-				col[i] = count
-			} else {
-				col[i] = 0
+		// 現在の日曜日からの週数を計算
+		weeksDiff := int(currentSunday.Sub(commitSunday).Hours() / (24 * 7))
+
+		// 週番号を設定（0が今週、1が先週、...）
+		week := weeksDiff
+		dayinweek := int(commitDate.Weekday())
+
+		if week >= 0 && week <= weeksInLastSixMonths {
+			if cols[week] == nil {
+				cols[week] = make(column, 7)
 			}
+			cols[week][dayinweek] = commits[k]
 		}
-		cols[week] = col
 	}
+
+	// 空の週も初期化
+	for i := 0; i <= weeksInLastSixMonths; i++ {
+		if cols[i] == nil {
+			cols[i] = make(column, 7)
+		}
+	}
+
 	return cols
 }
 
 func printCells(cols map[int]column) {
 	printMonths()
+	todayWeekdayIndex := int(time.Now().Weekday())
 
-	// 日曜から金曜まで行を処理
-	for j := 6; j >= 0; j-- {
-		for i := weeksInLastSixMonths + 1; i >= 0; i-- {
-			if i == weeksInLastSixMonths+1 {
-				printDayCol(j)
-			}
+	for j := 0; j < 7; j++ {
+		printDayCol(j)
 
-			// 週の列(i)にデータが存在するかチェック
+		// 左から右へ（古い日付から新しい日付へ）表示
+		for i := weeksInLastSixMonths; i >= 0; i-- {
+			// 週の列にデータが存在するかチェック
 			if col, ok := cols[i]; ok {
-				if i == 0 && j == calcOffset()-1 {
+				if i == 0 && j == todayWeekdayIndex {
 					printCell(col[j], true)
 					continue
 				} else {
@@ -198,9 +191,12 @@ func printMonths() {
 	monthLine.WriteString("     ")
 
 	now := time.Now()
-	currentSunday := getBeginningOfDay(now).Add(time.Duration(-now.Weekday()) * 24 * time.Hour)
+	today := getBeginningOfDay(now)
+	currentSunday := today.Add(time.Duration(-int(today.Weekday())) * 24 * time.Hour)
+
 	monthMarks := make(map[int]string)
 
+	// 各週の開始日を確認して月の境界を見つける
 	for i := weeksInLastSixMonths; i >= 0; i-- {
 		weekStart := currentSunday.Add(time.Duration(-i*7) * 24 * time.Hour)
 		prevWeekStart := currentSunday.Add(time.Duration(-(i+1)*7) * 24 * time.Hour)
@@ -211,14 +207,9 @@ func printMonths() {
 		}
 	}
 
-	for i := weeksInLastSixMonths + 1; i >= 0; i-- {
-		if i == weeksInLastSixMonths+1 {
-			monthLine.WriteString(" ")
-			continue
-		}
-
+	// 左から右へ（古い日付から新しい日付へ）表示
+	for i := weeksInLastSixMonths; i >= 0; i-- {
 		if month, ok := monthMarks[i]; ok {
-
 			monthLine.WriteString(fmt.Sprintf("%-4s", month))
 		} else {
 			monthLine.WriteString("    ")
@@ -251,23 +242,23 @@ func printDayCol(day int) {
 func printCell(val int, today bool) {
 	escape := "\033[0;37;30m"
 
-	switch {
-	case val > 0 && val < 5:
-		escape = "\033[1;30;46m"
-	case val >= 5 && val < 10:
-		escape = "\033[1;37;44m"
-	case val >= 10 && val < 20:
-		escape = "\033[1;97;44m"
-	case val >= 20:
-		escape = "\033[1;97;104m"
-	}
-
 	if today {
 		escape = "\033[1;37;45m"
+	} else {
+		switch {
+		case val > 0 && val < 5:
+			escape = "\033[38;5;17;48;5;153m"
+		case val >= 5 && val < 10:
+			escape = "\033[38;5;17;48;5;75m"
+		case val >= 10 && val < 15:
+			escape = "\033[38;5;18;48;5;33m"
+		case val >= 15:
+			escape = "\033[38;5;17;104m"
+		}
 	}
 
 	if val == 0 {
-		fmt.Printf("\033[0;37;40m%-4s\033[0m", " - ")
+		fmt.Printf(escape+"%-4s\033[0m", " - ")
 		return
 	}
 
