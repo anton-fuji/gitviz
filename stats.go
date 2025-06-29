@@ -193,27 +193,6 @@ func printCells(cols map[int]column) {
 }
 
 // グラフの最初の行に月を表示させる
-// func printMonths() {
-// 	week := getBeginningOfDay(time.Now()).Add(-(time.Duration(daysInLastSixMonths) * time.Hour * 24))
-// 	month := week.Month()
-// 	fmt.Printf("     ")
-
-// 	for {
-// 		if week.Month() != month {
-// 			fmt.Printf("%s", week.Month().String()[:3])
-// 			fmt.Printf("    ")
-// 			month = week.Month()
-// 		} else {
-// 			fmt.Printf("    ")
-// 		}
-// 		week = week.Add(7 * time.Hour * 24)
-// 		if week.After(time.Now()) {
-// 			break
-// 		}
-// 	}
-// 	fmt.Printf("\n")
-// }
-
 func printMonths() {
 	var monthLine strings.Builder
 	monthLine.WriteString("     ")
