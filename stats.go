@@ -60,7 +60,7 @@ func fillCommits(email string, path string, commits map[int]int) map[int]int {
 	// GitHub風の表示
 	offset := calcOffset()
 	err = iterator.ForEach(func(c *object.Commit) error {
-		daysAgo := countDaysSinceDate(c.Author.When) + offset
+		daysAgo := CountDaysSinceDate(c.Author.When) + offset
 
 		if c.Author.Email != email {
 			return nil
@@ -76,15 +76,15 @@ func fillCommits(email string, path string, commits map[int]int) map[int]int {
 	return commits
 }
 
-func getBeginningOfDay(t time.Time) time.Time {
+func GetBeginningOfDay(t time.Time) time.Time {
 	year, month, day := t.Date()
 	startOfDay := time.Date(year, month, day, 0, 0, 0, 0, t.Location())
 	return startOfDay
 }
 
-func countDaysSinceDate(date time.Time) int {
+func CountDaysSinceDate(date time.Time) int {
 	days := 0
-	now := getBeginningOfDay(time.Now())
+	now := GetBeginningOfDay(time.Now())
 
 	for date.Before(now) {
 		date = date.Add(time.Hour * 24)
@@ -123,12 +123,12 @@ func buildCols(keys []int, commits map[int]int) map[int]column {
 
 	now := time.Now()
 	// 今週の日曜日を基準点として設定
-	today := getBeginningOfDay(now)
+	today := GetBeginningOfDay(now)
 	currentSunday := today.Add(time.Duration(-int(today.Weekday())) * 24 * time.Hour)
 
 	// 各日について処理
 	for _, k := range keys {
-		commitDate := getBeginningOfDay(now).Add(time.Duration(-k) * 24 * time.Hour)
+		commitDate := GetBeginningOfDay(now).Add(time.Duration(-k) * 24 * time.Hour)
 
 		// その日が属する週の日曜日を計算
 		commitSunday := commitDate.Add(time.Duration(-int(commitDate.Weekday())) * 24 * time.Hour)
@@ -191,7 +191,7 @@ func printMonths() {
 	monthLine.WriteString("     ")
 
 	now := time.Now()
-	today := getBeginningOfDay(now)
+	today := GetBeginningOfDay(now)
 	currentSunday := today.Add(time.Duration(-int(today.Weekday())) * 24 * time.Hour)
 
 	monthMarks := make(map[int]string)
