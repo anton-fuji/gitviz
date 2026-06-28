@@ -7,7 +7,9 @@
 *.dll
 *.so
 *.dylib
-gitviz
+/gitviz
+gv
+/result
 # Test binary, built with `go test -c`
 *.test
 
@@ -23,6 +25,7 @@ profile.cov
 # Go workspace file
 go.work
 go.work.sum
+.cache/
 
 # env file
 .env
