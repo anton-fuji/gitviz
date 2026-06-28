@@ -8,6 +8,8 @@
 *.so
 *.dylib
 /gitviz
+gv
+/result
 # Test binary, built with `go test -c`
 *.test
 
