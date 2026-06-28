@@ -33,17 +33,50 @@ func TestGetBeginningOfDay(t *testing.T) {
 func TestCountDaysSinceDate(t *testing.T) {
 	now := GetBeginningOfDay(time.Now())
 
-	assert.Equal(t, 0, CountDaysSinceDate(now), "CountDaysSinceDate(Today) failed: Expected 0")
+	assert.Equal(t, 0, CountDaysSinceDate(now, DefaultDays), "CountDaysSinceDate(Today) failed: Expected 0")
 
 	yesterday := now.Add(-24 * time.Hour)
-	assert.Equal(t, 1, CountDaysSinceDate(yesterday), "CountDaysSinceDate(Yesterday) failed: Expected 1")
+	assert.Equal(t, 1, CountDaysSinceDate(yesterday, DefaultDays), "CountDaysSinceDate(Yesterday) failed: Expected 1")
 
 	oneWeekAgo := now.Add(-7 * 24 * time.Hour)
-	assert.Equal(t, 7, CountDaysSinceDate(oneWeekAgo), "CountDaysSinceDate(OneWeekAgo) failed: Expected 7")
+	assert.Equal(t, 7, CountDaysSinceDate(oneWeekAgo, DefaultDays), "CountDaysSinceDate(OneWeekAgo) failed: Expected 7")
 
-	farBeyondSixMonths := now.Add(-(daysInLastSixMonths + 10) * 24 * time.Hour)
-	assert.Equal(t, outOfRange, CountDaysSinceDate(farBeyondSixMonths), "CountDaysSinceDate(FarBeyondSixMonths) failed: Expected outOfRange")
+	farBeyondSixMonths := now.Add(-(DefaultDays + 10) * 24 * time.Hour)
+	assert.Equal(t, outOfRange, CountDaysSinceDate(farBeyondSixMonths, DefaultDays), "CountDaysSinceDate(FarBeyondSixMonths) failed: Expected outOfRange")
 
 	tomorrow := now.Add(24 * time.Hour)
-	assert.Equal(t, 0, CountDaysSinceDate(tomorrow), "CountDaysSinceDate(Tomorrow) failed: Expected 0 (for future date relative to current logic)")
+	assert.Equal(t, 0, CountDaysSinceDate(tomorrow, DefaultDays), "CountDaysSinceDate(Tomorrow) failed: Expected 0 (for future date relative to current logic)")
+}
+
+func TestCountDaysSinceDateUsesMaxDays(t *testing.T) {
+	now := GetBeginningOfDay(time.Now())
+	threeDaysAgo := now.Add(-3 * 24 * time.Hour)
+
+	assert.Equal(t, outOfRange, CountDaysSinceDate(threeDaysAgo, 2))
+	assert.Equal(t, 3, CountDaysSinceDate(threeDaysAgo, 3))
+}
+
+func TestWeeksForDays(t *testing.T) {
+	assert.Equal(t, 1, weeksForDays(1))
+	assert.Equal(t, 1, weeksForDays(7))
+	assert.Equal(t, 2, weeksForDays(8))
+	assert.Equal(t, 27, weeksForDays(DefaultDays))
+}
+
+func TestNormalizeColorTheme(t *testing.T) {
+	assert.Equal(t, DefaultColorTheme, normalizeColorTheme(""))
+	assert.Equal(t, DefaultColorTheme, normalizeColorTheme("unknown"))
+	assert.Equal(t, "blue", normalizeColorTheme(" blue "))
+	assert.Equal(t, "purple", normalizeColorTheme("PURPLE"))
+	assert.Equal(t, "orange", normalizeColorTheme("orange"))
+	assert.Equal(t, "gray", normalizeColorTheme("gray"))
+}
+
+func TestCellColorSupportsThemesInBothModes(t *testing.T) {
+	themes := []string{"green", "blue", "purple", "orange", "gray"}
+
+	for _, theme := range themes {
+		assert.NotEmpty(t, cellColor(1, false, theme), "block mode color should exist for %s", theme)
+		assert.NotEmpty(t, cellColor(1, true, theme), "numbers mode color should exist for %s", theme)
+	}
 }
