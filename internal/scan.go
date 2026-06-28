@@ -1,4 +1,4 @@
-package main
+package gitviz
 
 import (
 	"bufio"
@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func scan(folder string) {
+func Scan(folder string) {
 	fmt.Printf("Gitリポジトリを検索中・・・\n\n")
 	repositories := recursiveScanFolder(folder)
 	filePath := getDotFilePath()

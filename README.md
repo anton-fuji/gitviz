@@ -1,5 +1,5 @@
 # gitviz 👽
-![Go Version](https://img.shields.io/badge/Go-1.24.2-00ADD8.svg?logo=go&logoColor=white)
+![Go Version](https://img.shields.io/badge/Go-1.26.0-00ADD8.svg?logo=go&logoColor=white)
 ![GitHub Release](https://img.shields.io/github/v/release/anton-fuji/gitviz)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -34,7 +34,7 @@ go mod tidy
 
 ### 3. Install the executable
 ```sh
-go install .
+go install ./cmd
 ```
 This command compiles gitviz and places the executable in your $GOPATH/bin, making it accessible from any directory in your terminal.
 

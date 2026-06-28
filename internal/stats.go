@@ -1,4 +1,4 @@
-package main
+package gitviz
 
 import (
 	"fmt"
@@ -17,7 +17,7 @@ const weeksInLastSixMonths = 26
 
 type column []int
 
-func stats(email string) {
+func Stats(email string) {
 	commits := processRepositories(email)
 	printCommitsStats(commits)
 }

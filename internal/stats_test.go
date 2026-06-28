@@ -1,4 +1,4 @@
-package main
+package gitviz
 
 import (
 	"testing"

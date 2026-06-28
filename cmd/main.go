@@ -2,6 +2,8 @@ package main
 
 import (
 	"flag"
+
+	"github.com/anton-fuji/gitviz/internal"
 )
 
 func main() {
@@ -12,8 +14,8 @@ func main() {
 	flag.Parse()
 
 	if folder != "" {
-		scan(folder)
+		gitviz.Scan(folder)
 		return
 	}
-	stats(graphEmail)
+	gitviz.Stats(graphEmail)
 }
