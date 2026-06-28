@@ -2,14 +2,15 @@
 
 ## Project
 - Go CLI module: `github.com/anton-fuji/gitviz`.
-- `cmd/main.go` defines the `-add` and `-graph` flags.
+- `main.go` defines the `-add`, `-graph`, `-days`, and `-numbers` flags.
 - `internal/scan.go` finds Git repositories under a folder and stores paths in `~/.gitlocalstats`.
-- `internal/stats.go` reads registered repositories, counts commits for an author email over the last 183 days, and prints a GitHub-style terminal graph.
+- `internal/stats.go` reads registered repositories, counts commits for an author email over the configured day range, and prints a GitHub-style terminal graph.
 
 ## Commands
 - Test: `go test ./...`
-- Run scanner: `go run ./cmd -add /path/to/projects`
-- Run graph: `go run ./cmd -graph user@example.com`
+- Run scanner: `go run . -add /path/to/projects`
+- Run graph: `go run . -graph user@example.com`
+- Run with Nix: `nix run . -- -graph user@example.com`
 
 ## Guidelines
 - Keep changes small and idiomatic Go; run `gofmt` on edited Go files.

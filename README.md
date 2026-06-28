@@ -9,6 +9,17 @@
 ![](demo/demo.png)
 
 # Setup
+## Try without installing
+If you have Nix with flakes enabled, you can run the latest gitviz from GitHub without installing it.
+```sh
+nix run --refresh github:anton-fuji/gitviz
+```
+
+Pass gitviz options after `--`.
+```sh
+nix run --refresh github:anton-fuji/gitviz -- -days 365
+```
+
 If you have Homebrew installed, you can easily set up `gitviz` by following these steps.
 ### 1. Tap the `gitviz` Homebrew repository
 ```sh
@@ -19,7 +30,7 @@ brew tap anton-fuji/gitviz
 ```sh
 brew install gitviz
 ```
-## Using `go install`  
+## Using `go install`
 If you prefer to install `gitviz` directly from source using Go.
 ### 1. Clone this Repository
 ```sh
@@ -34,7 +45,7 @@ go mod tidy
 
 ### 3. Install the executable
 ```sh
-go install ./cmd
+go install .
 ```
 This command compiles gitviz and places the executable in your $GOPATH/bin, making it accessible from any directory in your terminal.
 
@@ -50,8 +61,18 @@ gitviz -add /path/to/your/git/projects/directory
 > Registered repository paths are saved in a hidden file named `.gitlocalstats` in your home directory
 
 ## 2. Displaying the Contribution Graph
-Once repositories are registered, you can generate and display your contribution graph by specifying your Git commit email address.
+Once repositories are registered, you can generate and display your contribution graph. If `-graph` is omitted, gitviz uses `git config user.email`.
 ```sh
 gitviz -graph your.email@example.com
 ```
 - Replace `your-address@example.com` with the email address you use for your Git Commits.
+
+You can change the number of days shown with `-days`.
+```sh
+gitviz -days 365
+```
+
+By default, gitviz keeps the graph compact and shows totals below it. Use `-numbers` to show commit counts in every cell.
+```sh
+gitviz -numbers
+```
