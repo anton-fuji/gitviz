@@ -23,7 +23,7 @@
         {
           default = pkgs.buildGoModule {
             pname = "gitviz";
-            version = "0.1.0";
+            version = "0.2.0";
             src = ./.;
 
             vendorHash = "sha256-BPXGllfFhyGjVQXY9g9GzrGtaWuwtx1bJqVzajephHc=";
