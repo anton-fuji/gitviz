@@ -1,78 +1,152 @@
-# gitviz 👽
+# gitviz
+
 ![Go Version](https://img.shields.io/badge/Go-1.26.0-00ADD8.svg?logo=go&logoColor=white)
 ![GitHub Release](https://img.shields.io/github/v/release/anton-fuji/gitviz)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-`gitviz` is a command-line utility written in Go that visualizes your Git commit activity from local repositories, mimicking GitHub's contribution graph directly in your terminal.
+`gitviz` visualizes commit activity from your local Git repositories as a GitHub-style contribution graph in the terminal.
 
-# gitviz image 
-![](demo/demo.png)
+![gitviz demo](demo/demo.png)
 
-# Setup
-## Try without installing
-If you have Nix with flakes enabled, you can run the latest gitviz from GitHub without installing it.
+## Quick Start
+
+Register repositories first, then render the graph.
+
+```sh
+gitviz -add ~/src
+gitviz
+```
+
+By default, `gitviz` reads your commit email from:
+
+```sh
+git config user.email
+```
+
+You can pass an email explicitly when needed.
+
+```sh
+gitviz -graph your.email@example.com
+```
+
+Registered repositories are stored in:
+
+```sh
+~/.gitlocalstats
+```
+
+## Try Without Installing
+
+If you use Nix with flakes enabled, run the latest version from GitHub without installing it.
+
 ```sh
 nix run --refresh github:anton-fuji/gitviz
 ```
 
-Pass gitviz options after `--`.
+Pass options after `--`.
+
 ```sh
-nix run --refresh github:anton-fuji/gitviz -- -days 365
+nix run --refresh github:anton-fuji/gitviz -- -days 365 -color blue
 ```
 
-If you have Homebrew installed, you can easily set up `gitviz` by following these steps.
-### 1. Tap the `gitviz` Homebrew repository
+## Install
+
+### Homebrew
+
 ```sh
 brew tap anton-fuji/gitviz
-```
-
-### 2. Install gitviz
-```sh
 brew install gitviz
 ```
-## Using `go install`
-If you prefer to install `gitviz` directly from source using Go.
-### 1. Clone this Repository
+
+### Go
+
 ```sh
-git clone https://github.com/anton-fuji/gitviz.git 
+git clone https://github.com/anton-fuji/gitviz.git
 cd gitviz
-```
-
-### 2. Initialize Go modules and download dependencies
-```sh
-go mod tidy
-```
-
-### 3. Install the executable
-```sh
 go install .
 ```
-This command compiles gitviz and places the executable in your $GOPATH/bin, making it accessible from any directory in your terminal.
 
-# Usage
-`gitviz` provides two primary CLI options.
-## 1. Scanning and Regisering Repositories
-Before visualizing, you need to tell gitviz which repositories to monitor. This command scans a parent directory for Git repositories and saves their paths for future analysis.
+## Usage
+
+### Register Repositories
+
+Scan a parent directory and save all Git repositories found under it.
+
 ```sh
-gitviz -add /path/to/your/git/projects/directory
+gitviz -add /path/to/projects
 ```
 
-> [!NOTE]
-> Registered repository paths are saved in a hidden file named `.gitlocalstats` in your home directory
+`gitviz` skips repeated entries when updating `~/.gitlocalstats`.
 
-## 2. Displaying the Contribution Graph
-Once repositories are registered, you can generate and display your contribution graph. If `-graph` is omitted, gitviz uses `git config user.email`.
+### Show The Graph
+
+```sh
+gitviz
+```
+
+Show activity for a specific email.
+
 ```sh
 gitviz -graph your.email@example.com
 ```
-- Replace `your-address@example.com` with the email address you use for your Git Commits.
 
-You can change the number of days shown with `-days`.
+Show a longer range.
+
 ```sh
 gitviz -days 365
 ```
 
-By default, gitviz keeps the graph compact and shows totals below it. Use `-numbers` to show commit counts in every cell.
+Show commit counts inside each cell.
+
 ```sh
 gitviz -numbers
+```
+
+Combine options.
+
+```sh
+gitviz -days 365 -numbers -color purple
+```
+
+## Color Themes
+
+The default theme is `green`. Today is always emphasized with a pink accent.
+
+| Theme | Command |
+| --- | --- |
+| Green | `gitviz -color green` |
+| Blue | `gitviz -color blue` |
+| Purple | `gitviz -color purple` |
+| Orange | `gitviz -color orange` |
+| Gray | `gitviz -color gray` |
+
+Color themes work in both compact mode and `-numbers` mode.
+
+```sh
+gitviz -color orange
+gitviz -numbers -color orange
+```
+
+## Options
+
+| Flag | Default | Description |
+| --- | --- | --- |
+| `-add <path>` | none | Scan a directory and register Git repositories. |
+| `-graph <email>` | `git config user.email` | Email address used to filter commits. |
+| `-days <number>` | `183` | Number of days to show. |
+| `-numbers` | `false` | Show commit counts inside graph cells. |
+| `-color <theme>` | `green` | Graph color theme: `green`, `blue`, `purple`, `orange`, `gray`. |
+
+## Development
+
+```sh
+go test ./...
+go run . -graph your.email@example.com
+```
+
+With Nix:
+
+```sh
+nix develop
+nix run . -- -graph your.email@example.com
 ```

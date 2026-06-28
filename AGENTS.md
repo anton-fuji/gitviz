@@ -10,6 +10,7 @@
 - Test: `go test ./...`
 - Run scanner: `go run . -add /path/to/projects`
 - Run graph: `go run . -graph user@example.com`
+- Run graph with options: `go run . -days 365 -numbers -color purple -graph user@example.com`
 - Run with Nix: `nix run . -- -graph user@example.com`
 
 ## Guidelines
