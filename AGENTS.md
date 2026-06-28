@@ -2,7 +2,7 @@
 
 ## Project
 - Go CLI module: `github.com/anton-fuji/gitviz`.
-- `main.go` defines the `-add`, `-graph`, `-days`, and `-numbers` flags.
+- `main.go` defines the `-add`, `-graph`, `-days`, `-numbers`, and `-color` flags.
 - `internal/scan.go` finds Git repositories under a folder and stores paths in `~/.gitlocalstats`.
 - `internal/stats.go` reads registered repositories, counts commits for an author email over the configured day range, and prints a GitHub-style terminal graph.
 
