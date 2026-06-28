@@ -51,6 +51,12 @@ nix run --refresh github:anton-fuji/gitviz -- -days 365 -color blue
 
 ## Install
 
+### Nix
+
+```sh
+nix profile install github:anton-fuji/gitviz
+```
+
 ### Homebrew
 
 ```sh
@@ -114,18 +120,20 @@ The default theme is `green`. Today is always emphasized with a pink accent.
 
 | Theme | Command |
 | --- | --- |
-| Green | `gitviz -color green` |
-| Blue | `gitviz -color blue` |
-| Purple | `gitviz -color purple` |
-| Orange | `gitviz -color orange` |
-| Gray | `gitviz -color gray` |
+| Green | `gitviz -graph your.email@example.com -color green` |
+| Blue | `gitviz -graph your.email@example.com -color blue` |
+| Purple | `gitviz -graph your.email@example.com -color purple` |
+| Orange | `gitviz -graph your.email@example.com -color orange` |
+| Gray | `gitviz -graph your.email@example.com -color gray` |
 
 Color themes work in both compact mode and `-numbers` mode.
 
 ```sh
-gitviz -color orange
-gitviz -numbers -color orange
+gitviz -graph your.email@example.com -color orange
+gitviz -graph your.email@example.com -numbers -color orange
 ```
+
+See [color.md](color.md) for screenshots of every color theme.
 
 ## Options
 
